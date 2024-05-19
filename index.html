@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Кормление котиков</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    #status {
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 200px;
+      overflow-y: scroll;
+    input {
+      width: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Кормление котиков</h1>
+  <form id="input-form">
+    <label for="n">Количество котиков (n):</label>
+    <input id="n" value="5" required><br>
+
+    <label for="b">Корм на котика (b):</label>
+    <input id="b" value="5" required><br>
+
+    <label for="m">Вместимость миски (m):</label>
+    <input id="m" value="10" required><br>
+
+    <label for="t">Время еды котика (t):</label>
+    <input id="t" value="2" required><br>
+
+    <label for="r">Время наполнения миски (r):</label>
+    <input id="r" value="1" required><br>
+    
+    <button type="submit">Запустить</button>
+  </form>
+
+  <div id="status"></div>
+  <p>Общее время: <span id="total-time">0</span> секунд.</p>
+
+  <script>
+    const form = document.getElementById('input-form');
+    const statusDiv = document.getElementById('status');
+    const totalTimeSpan = document.getElementById('total-time');
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const n = parseInt(document.getElementById('n').value);
+      const b = parseInt(document.getElementById('b').value);
+      const m = parseInt(document.getElementById('m').value);
+      const t = parseInt(document.getElementById('t').value);
+      const r = parseInt(document.getElementById('r').value);
+
+      if (b > m) {
+        alert("Корм на котика (b) не может быть больше вместимости миски (m).");
+        return;
+      }
+
+      statusDiv.innerHTML = '';
+      totalTimeSpan.textContent = '0';
+
+      let currentTime = 0;
+      let currentFood = m;
+      let currentCat = 0;
+
+      const log = (message) => {
+        statusDiv.innerHTML += `${currentTime} сек: ${message}<br>`;
+      };
+
+      const feedCat = () => {
+        log(`Котик ${currentCat + 1} подошел к миске`);
+        currentFood -= b;
+        currentTime += t;
+        log(`Котик ${currentCat + 1} отошел от миски`);
+
+        currentCat++;
+        if (currentCat === n) {
+          totalTimeSpan.textContent = currentTime;
+          return;
+        }
+
+        if (currentFood < b) {
+          refillBowl();
+        } else {
+          feedCat();
+        }
+      };
+
+      const refillBowl = () => {
+        log(`Бабушка наполняет миску`);
+        currentTime += r;
+        currentFood = m;
+        log(`Миска наполнена`);
+        feedCat();
+      };
+
+      feedCat(); // Начинаем кормить первого котика
+    });
+  </script>
+</body>
+</html>
